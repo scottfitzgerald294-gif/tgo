@@ -1,9 +1,10 @@
 """Typed models for the local PDD message simulator."""
 
+from enum import StrEnum
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, StringConstraints
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StringConstraints
 
 Identifier = Annotated[
     str,
@@ -13,6 +14,16 @@ MessageText = Annotated[
     str,
     StringConstraints(strip_whitespace=True, min_length=1, max_length=4000),
 ]
+
+
+class MessageStatus(StrEnum):
+    """Durable local processing and delivery states."""
+
+    PENDING = "pending"
+    SENT = "sent"
+    FAILED = "failed"
+    RETRYING = "retrying"
+    DEAD_LETTER = "dead_letter"
 
 
 class ConversationKey(BaseModel):
@@ -90,3 +101,6 @@ class SimulationResult(BaseModel):
     conversation_created: bool
     normalized_message: NormalizedMessage
     outbound_message: OutboundMessage
+    processing_status: MessageStatus = MessageStatus.SENT
+    duplicate: bool = False
+    attempts: int = Field(default=1, ge=0)

@@ -1,5 +1,7 @@
 """HTTP routes for the in-process PDD message simulator."""
 
+from typing import Protocol
+
 from fastapi import APIRouter, HTTPException
 
 from app.models import (
@@ -8,10 +10,24 @@ from app.models import (
     PddTextMessageRequest,
     SimulationResult,
 )
-from app.services import PddSimulatorService
+from app.services import ReliabilityUnavailableError, ReplayWindowError
 
 
-def create_simulator_router(service: PddSimulatorService) -> APIRouter:
+class SimulatorService(Protocol):
+    """Transport-facing subset shared by simple and reliable simulators."""
+
+    async def process(
+        self,
+        request: PddTextMessageRequest,
+    ) -> SimulationResult: ...
+
+    async def transcript(
+        self,
+        key: ConversationKey,
+    ) -> ConversationTranscript | None: ...
+
+
+def create_simulator_router(service: SimulatorService) -> APIRouter:
     """Bind one injected simulator service to local-only HTTP routes."""
     router = APIRouter(prefix="/simulator", tags=["simulator"])
 
@@ -19,7 +35,15 @@ def create_simulator_router(service: PddSimulatorService) -> APIRouter:
     async def process_message(
         message: PddTextMessageRequest,
     ) -> SimulationResult:
-        return await service.process(message)
+        try:
+            return await service.process(message)
+        except ReplayWindowError as error:
+            raise HTTPException(status_code=409, detail=error.reason) from error
+        except ReliabilityUnavailableError as error:
+            raise HTTPException(
+                status_code=503,
+                detail="Reliable message processing is temporarily unavailable",
+            ) from error
 
     @router.get(
         "/shops/{shop_id}/buyers/{buyer_id}/conversations/{conversation_id}",

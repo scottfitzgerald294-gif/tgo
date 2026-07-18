@@ -1,6 +1,8 @@
 """Shared test fixtures."""
 
 from collections.abc import Iterator
+from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
 from fastapi import FastAPI
@@ -8,7 +10,8 @@ from fastapi.testclient import TestClient
 
 from app.adapters.pdd import MockPddAdapter
 from app.main import create_app
-from app.repositories import InMemoryConversationRepository
+from app.repositories import InMemoryConversationRepository, SQLiteReliabilityStore
+from tests.fixtures.reliability import FakeClock
 
 
 @pytest.fixture
@@ -25,6 +28,7 @@ def conversation_repository() -> InMemoryConversationRepository:
 
 @pytest.fixture
 def application(
+    tmp_path: Path,
     mock_pdd_adapter: MockPddAdapter,
     conversation_repository: InMemoryConversationRepository,
 ) -> FastAPI:
@@ -32,6 +36,8 @@ def application(
     return create_app(
         pdd_adapter=mock_pdd_adapter,
         conversation_repository=conversation_repository,
+        reliability_store=SQLiteReliabilityStore(tmp_path / "reliability.sqlite3"),
+        clock=FakeClock(datetime(2026, 7, 18, 9, 0, tzinfo=UTC)),
     )
 
 

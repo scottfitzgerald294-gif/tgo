@@ -2,12 +2,12 @@
 
 ## 1. Current Scope
 
-Phase 3 established the independent Python project and dependency-free process
-health endpoint. Phase 5 adds only an in-process PDD message simulator with
-synthetic data, an in-memory conversation repository, a fixed reply, and a
-buyer-visible transcript endpoint. The application still does not connect to
-real PDD, TGO business APIs, a database, a message system, a knowledge service,
-or a model provider.
+Phase 3 established the independent Python project and process health endpoint.
+Phase 5 added the synthetic PDD message simulator. Phase 6 adds an
+extension-owned SQLite Inbox/Outbox/Audit ledger, local idempotency, retries,
+dead letters, per-conversation locking, minimal AI/human reply leases, and
+restart recovery. The application still does not connect to real PDD, TGO
+business APIs, a production database, a knowledge service, or a model provider.
 
 Runtime endpoints are:
 
@@ -27,6 +27,11 @@ Use the repository-level
 [`PDD simulator runbook`](../../../../docs/runbooks/pdd-simulator.md) for
 synthetic POST/GET examples, expected results, limitations, and troubleshooting.
 
+Use the repository-level
+[`message reliability runbook`](../../../../docs/runbooks/message-reliability.md)
+for SQLite state, retries, replay-window handling, human ownership, recovery,
+503 behavior, and safe inspection.
+
 ## 2. Prerequisites
 
 - Python 3.11
@@ -41,8 +46,9 @@ cd extensions/pdd-customer-service
 poetry install --with dev
 ```
 
-Do not install or configure a PDD SDK, model SDK, database, queue, or browser
-automation tool for the Phase 5 simulator.
+Do not install or configure a PDD SDK, model SDK, production database, queue, or
+browser automation tool. Phase 6 uses only Python's standard-library SQLite and
+adds no dependency or Docker service.
 
 If the host does not provide the required Python version or development tools,
 use an isolated Python 3.11 development container. Do not replace the project's
@@ -67,6 +73,9 @@ Rules:
   into the repository, tests, fixtures, logs, screenshots, or issue reports.
 - `PDD_INTEGRATION_ENABLED` and `TGO_INTEGRATION_ENABLED` must remain unset for
   the local simulator.
+- `PDD_RELIABILITY_DB_PATH` may point only to a local development SQLite file;
+  never commit the file or put credentials, URLs, or production paths in the
+  value.
 
 Verify the ignore rule without creating a file:
 
@@ -135,9 +144,10 @@ Every behavior change follows this sequence:
 5. Run the focused test, its full test category, and `make test`.
 6. Run formatting, lint, and security checks before committing.
 
-Tests must use synthetic data. Unit and Phase 5 integration tests may not open
-external network connections. Future real adapters require approved contract
-tests before any production implementation.
+Tests must use synthetic data. Unit and integration tests may not open external
+network connections. Reliability tests use temporary SQLite files and
+deterministic clocks. Future real adapters require approved contract tests
+before any production implementation.
 
 ## 7. Directory Ownership
 
