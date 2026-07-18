@@ -187,3 +187,21 @@ make dev DISABLE=tgo-rag-beat,tgo-workflow-worker
 - [`repos/tgo-widget-miniprogram/AGENTS.md`](repos/tgo-widget-miniprogram/AGENTS.md)
 - [`repos/tgo-cli/AGENTS.md`](repos/tgo-cli/AGENTS.md)
 - [`repos/tgo-widget-cli/AGENTS.md`](repos/tgo-widget-cli/AGENTS.md)
+
+## PDD Customer Service Extension
+
+- [`extensions/pdd-customer-service/AGENTS.md`](extensions/pdd-customer-service/AGENTS.md)
+
+Changes under `extensions/pdd-customer-service/` must follow the local
+`AGENTS.md` in that directory.
+
+- Treat the extension as the independent PDD Connector boundary described in
+  `docs/architecture/`.
+- Every behavior change must be driven by a failing automated test and finish
+  with the relevant unit, integration, contract, lint, and security checks.
+- Keep PDD protocol details, credentials, deduplication, reply ownership, and
+  outbound delivery outside `repos/*`.
+- Do not add real PDD or model access until a later phase explicitly authorizes
+  it and provides official contracts and test credentials.
+- Do not modify TGO core code for extension convenience. Any unavoidable core
+  change requires a separately approved phase and isolated commit.
