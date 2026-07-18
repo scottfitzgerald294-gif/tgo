@@ -4,6 +4,13 @@ from app.repositories.conversations import (
     ConversationRepository,
     InMemoryConversationRepository,
 )
+from app.repositories.handoff import (
+    HandoffNotFoundError,
+    HandoffPersistenceError,
+    HandoffRepository,
+    HandoffTransitionError,
+    SQLiteHandoffRepository,
+)
 from app.repositories.knowledge import (
     DuplicateKnowledgeVersionError,
     JsonKnowledgeRepository,
@@ -22,6 +29,10 @@ __all__ = [
     "ConversationRepository",
     "DuplicateKnowledgeVersionError",
     "InMemoryConversationRepository",
+    "HandoffNotFoundError",
+    "HandoffPersistenceError",
+    "HandoffRepository",
+    "HandoffTransitionError",
     "JsonKnowledgeRepository",
     "KnowledgePersistenceError",
     "KnowledgeRepository",
@@ -30,4 +41,5 @@ __all__ = [
     "PersistenceUnavailableError",
     "ReliabilityStore",
     "SQLiteReliabilityStore",
+    "SQLiteHandoffRepository",
 ]

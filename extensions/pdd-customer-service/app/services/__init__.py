@@ -1,5 +1,6 @@
 """Application service package."""
 
+from app.services.handoff import HandoffService, HandoffUnavailableError
 from app.services.knowledge import (
     KNOWLEDGE_CSV_HEADERS,
     KnowledgeCatalogService,
@@ -14,12 +15,15 @@ from app.services.reliability import (
     ReplayWindowError,
     SystemClock,
 )
+from app.services.risk_routing import RiskConfigurationError, RiskRuleEngine
 from app.services.simulator import FIXED_REPLY, PddSimulatorService
 
 __all__ = [
     "Clock",
     "ConversationLockRegistry",
     "FIXED_REPLY",
+    "HandoffService",
+    "HandoffUnavailableError",
     "KNOWLEDGE_CSV_HEADERS",
     "KnowledgeCatalogService",
     "KnowledgeImportBlockedError",
@@ -28,5 +32,7 @@ __all__ = [
     "ReliabilityUnavailableError",
     "ReliablePddSimulatorService",
     "ReplayWindowError",
+    "RiskConfigurationError",
+    "RiskRuleEngine",
     "SystemClock",
 ]

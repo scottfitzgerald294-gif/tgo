@@ -10,7 +10,9 @@ restart recovery. Phase 7 adds an extension-owned, local JSON knowledge
 catalog with strict CSV preview/import, immutable versions, active pointers,
 conflict detection, deterministic eligibility, and no-delete rollback. The
 application still does not connect to real PDD, TGO business APIs, TGO RAG, a
-production database, or a model provider.
+production database, or a model provider. Phase 8 adds deterministic risk
+routing, a persistent local handoff state machine, a body-free staff queue,
+and AI/human reply-lease interlocking in the same local SQLite database.
 
 Runtime endpoints are:
 
@@ -20,6 +22,13 @@ GET /health
 
 POST /simulator/messages
 GET /simulator/shops/{shop_id}/buyers/{buyer_id}/conversations/{conversation_id}
+
+POST /handoff/evaluate
+GET  /handoff/queue
+GET  /handoff/conversations/{shop_id}/{buyer_id}/{conversation_id}
+POST /handoff/conversations/{shop_id}/{buyer_id}/{conversation_id}/claim
+POST /handoff/conversations/{shop_id}/{buyer_id}/{conversation_id}/resume
+POST /handoff/conversations/{shop_id}/{buyer_id}/{conversation_id}/close
 ```
 
 The health endpoint is a process-level readiness signal. It intentionally makes
@@ -40,6 +49,11 @@ Use the repository-level
 for the fixed CSV contract, preview/import binding, eligibility, conflicts,
 rollback, and the strict FAKE/TEST data boundary.
 
+Use the repository-level
+[`human handoff runbook`](../../../../docs/runbooks/human-handoff.md) for rule
+order, fixed responses, state transitions, queue operations, high-risk
+acknowledgement, schema v2 backup, and failure handling.
+
 ## 2. Prerequisites
 
 - Python 3.11
@@ -57,7 +71,8 @@ poetry install --with dev
 Do not install or configure a PDD SDK, model SDK, RAG client, production
 database, queue, or browser automation tool. Phases 6 and 7 use only Python
 standard-library SQLite/JSON/CSV support and add no dependency or Docker
-service.
+service. Phase 8 also uses only Python standard-library JSON and SQLite
+support and adds no dependency or Docker service.
 
 If the host does not provide the required Python version or development tools,
 use an isolated Python 3.11 development container. Do not replace the project's
@@ -84,7 +99,10 @@ Rules:
   the local simulator.
 - `PDD_RELIABILITY_DB_PATH` may point only to a local development SQLite file;
   never commit the file or put credentials, URLs, or production paths in the
-  value.
+  value. Reliability and handoff state intentionally share this file so reply
+  ownership and conversation mode change in one transaction. Preserve the
+  database and any `-wal` or `-shm` sidecars during diagnosis; never delete
+  them to clear an error.
 - `PDD_KNOWLEDGE_CATALOG_PATH` may point only to an ignored local JSON file;
   the catalog may contain only clearly synthetic FAKE/TEST knowledge.
 
@@ -156,10 +174,10 @@ Every behavior change follows this sequence:
 6. Run formatting, lint, and security checks before committing.
 
 Tests must use synthetic data. Unit and integration tests may not open external
-network connections. Reliability tests use temporary SQLite files and
-deterministic clocks; knowledge tests use temporary JSON files and FAKE/TEST
-records. Future real adapters require approved contract tests before any
-production implementation.
+network connections. Reliability and handoff tests use temporary SQLite files
+and deterministic clocks; knowledge tests use temporary JSON files and
+FAKE/TEST records. Future real adapters require approved contract tests before
+any production implementation.
 
 ## 7. Directory Ownership
 

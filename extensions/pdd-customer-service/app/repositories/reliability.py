@@ -12,6 +12,7 @@ from app.models import (
     ClaimResult,
     ConversationKey,
     ConversationMessage,
+    ConversationMode,
     ConversationTranscript,
     MessageKey,
     MessageStatus,
@@ -20,8 +21,10 @@ from app.models import (
     ReplyOwner,
 )
 
-SCHEMA_VERSION = 1
-SCHEMA_PATH = Path(__file__).with_name("sql") / "001_reliability.sql"
+SCHEMA_VERSION = 2
+SCHEMA_DIRECTORY = Path(__file__).with_name("sql")
+SCHEMA_V1_PATH = SCHEMA_DIRECTORY / "001_reliability.sql"
+SCHEMA_V2_PATH = SCHEMA_DIRECTORY / "002_handoff.sql"
 
 
 class PersistenceUnavailableError(RuntimeError):
@@ -127,6 +130,12 @@ class SQLiteReliabilityStore:
     ) -> None:
         self._database_path = database_path
         self._timeout_seconds = timeout_seconds
+
+    @property
+    def database_path(self) -> Path:
+        """Return the local path shared with the handoff repository."""
+
+        return self._database_path
 
     async def initialize(self) -> None:
         """Create or validate the versioned schema without import side effects."""
@@ -330,12 +339,16 @@ class SQLiteReliabilityStore:
 
     def _initialize_sync(self) -> None:
         self._database_path.parent.mkdir(parents=True, exist_ok=True)
-        schema = SCHEMA_PATH.read_text(encoding="utf-8")
+        schema_v1 = SCHEMA_V1_PATH.read_text(encoding="utf-8")
+        schema_v2 = SCHEMA_V2_PATH.read_text(encoding="utf-8")
         with self._connect() as connection:
             connection.execute("PRAGMA journal_mode = WAL")
             version = int(connection.execute("PRAGMA user_version").fetchone()[0])
             if version == 0:
-                connection.executescript(schema)
+                connection.executescript(schema_v1)
+                connection.executescript(schema_v2)
+            elif version == 1:
+                connection.executescript(schema_v2)
             elif version != SCHEMA_VERSION:
                 raise RuntimeError("Unsupported reliability schema version")
 
@@ -675,6 +688,10 @@ class SQLiteReliabilityStore:
         connection = self._connect()
         try:
             connection.execute("BEGIN IMMEDIATE")
+            mode = self._select_conversation_mode(connection, key)
+            if mode is not None and mode is not ConversationMode.AI:
+                connection.commit()
+                return None
             row = self._select_lease(connection, key)
             if row is None:
                 epoch = 1
@@ -719,10 +736,12 @@ class SQLiteReliabilityStore:
     ) -> bool:
         with self._connect() as connection:
             row = self._select_lease(connection, key)
+            mode = self._select_conversation_mode(connection, key)
         return (
             row is not None
             and ReplyOwner(str(row["owner"])) is owner
             and int(row["epoch"]) == epoch
+            and (mode is None or mode is ConversationMode.AI)
         )
 
     def _set_lease_owner_sync(
@@ -788,6 +807,26 @@ class SQLiteReliabilityStore:
                 (key.shop_id, key.buyer_id, key.conversation_id),
             ).fetchone(),
         )
+
+    @staticmethod
+    def _select_conversation_mode(
+        connection: sqlite3.Connection,
+        key: ConversationKey,
+    ) -> ConversationMode | None:
+        row = connection.execute(
+            """
+            SELECT mode
+            FROM conversation_handoff_states
+            WHERE
+                shop_id = ?
+                AND buyer_id = ?
+                AND conversation_id = ?
+            """,
+            (key.shop_id, key.buyer_id, key.conversation_id),
+        ).fetchone()
+        if row is None:
+            return None
+        return ConversationMode(str(row["mode"]))
 
     def _recoverable_sync(
         self,
