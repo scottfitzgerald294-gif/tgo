@@ -148,6 +148,8 @@ Thumbs.db
 
 # Project specific
 logs/
+!docs/weekend-run/logs/
+!docs/weekend-run/logs/*.md
 backups/
 *.db
 *.sqlite3
