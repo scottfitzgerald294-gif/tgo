@@ -99,6 +99,10 @@ critical
 `high/critical`会把会话标记为高风险；显式恢复AI还必须
 `risk_acknowledged=true`。
 
+代码类型命名为`HandoffRiskLevel`，与阶段7知识模型的
+`RiskLevel(low/medium/high)`隔离，不能借阶段8增加`critical`而放宽知识CSV
+合同。
+
 ### 会话模式
 
 ```text

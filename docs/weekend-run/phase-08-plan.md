@@ -79,7 +79,7 @@ extensions/pdd-customer-service/tests/conftest.py
 **输出接口：**
 
 ```python
-class RiskLevel(StrEnum):
+class HandoffRiskLevel(StrEnum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -115,7 +115,7 @@ class RoutingContext(BaseModel):
 class RoutingDecision(BaseModel):
     action: RoutingAction
     reason: HandoffReason | None
-    risk_level: RiskLevel
+    risk_level: HandoffRiskLevel
     response_text: str | None
 
 class RiskRuleEngine:
@@ -225,7 +225,7 @@ class HandoffRepository(Protocol):
         key: ConversationKey,
         *,
         reason: HandoffReason,
-        risk_level: RiskLevel,
+        risk_level: HandoffRiskLevel,
         operator: str,
         occurred_at: datetime,
     ) -> ConversationHandoffState: ...
