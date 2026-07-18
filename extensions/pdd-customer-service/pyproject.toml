@@ -7,9 +7,9 @@ packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-fastapi = ">=0.115,<1.0"
-uvicorn = { version = ">=0.32,<1.0", extras = ["standard"] }
-pydantic = ">=2.9,<3.0"
+fastapi = "^0.115.0"
+uvicorn = { version = "^0.32.0", extras = ["standard"] }
+pydantic = "^2.9.0"
 
 [tool.poetry.group.dev.dependencies]
 bandit = ">=1.8,<2.0"
