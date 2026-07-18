@@ -19,12 +19,12 @@ run:
 	$(POETRY) run uvicorn app.main:app --host 127.0.0.1 --port 8091
 
 format:
-	$(POETRY) run ruff format app tests
+	$(POETRY) run ruff format app scripts tests
 
 lint:
-	$(POETRY) run ruff format --check app tests
-	$(POETRY) run ruff check app tests
-	$(POETRY) run mypy app tests
+	$(POETRY) run ruff format --check app scripts tests
+	$(POETRY) run ruff check app scripts tests
+	$(POETRY) run mypy app scripts tests
 
 test:
 	$(POETRY) run python -m pytest
@@ -36,6 +36,6 @@ test-integration:
 	$(POETRY) run python -m pytest tests/integration
 
 security-check:
-	$(POETRY) run bandit -q -r app
+	$(POETRY) run bandit -q -r app scripts
 	$(POETRY) run pip-audit
 	git check-ignore -q .env

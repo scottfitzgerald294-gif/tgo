@@ -1,6 +1,22 @@
 """Typed connector models."""
 
 from app.models.health import HealthResponse
+from app.models.knowledge import (
+    ApprovalStatus,
+    ImportPreview,
+    KnowledgeActiveVersion,
+    KnowledgeAuditEvent,
+    KnowledgeCatalog,
+    KnowledgeImportResult,
+    KnowledgeIssue,
+    KnowledgeIssueSeverity,
+    KnowledgeKind,
+    KnowledgeRecord,
+    KnowledgeRollbackResult,
+    KnowledgeScope,
+    KnowledgeStatus,
+    RiskLevel,
+)
 from app.models.messages import (
     ConversationKey,
     ConversationMessage,
@@ -23,11 +39,24 @@ from app.models.reliability import (
 
 __all__ = [
     "AuditRecord",
+    "ApprovalStatus",
     "ClaimResult",
     "ConversationKey",
     "ConversationMessage",
     "ConversationTranscript",
     "HealthResponse",
+    "ImportPreview",
+    "KnowledgeActiveVersion",
+    "KnowledgeAuditEvent",
+    "KnowledgeCatalog",
+    "KnowledgeImportResult",
+    "KnowledgeIssue",
+    "KnowledgeIssueSeverity",
+    "KnowledgeKind",
+    "KnowledgeRecord",
+    "KnowledgeRollbackResult",
+    "KnowledgeScope",
+    "KnowledgeStatus",
     "MessageStatus",
     "MessageKey",
     "NormalizedMessage",
@@ -36,6 +65,7 @@ __all__ = [
     "RecoverySummary",
     "ReliabilityRecord",
     "ReplyOwner",
+    "RiskLevel",
     "RetryPolicy",
     "SimulationResult",
 ]

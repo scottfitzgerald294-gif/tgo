@@ -3,11 +3,14 @@
 ## 1. Current Scope
 
 Phase 3 established the independent Python project and process health endpoint.
-Phase 5 added the synthetic PDD message simulator. Phase 6 adds an
+Phase 5 added the synthetic PDD message simulator. Phase 6 added an
 extension-owned SQLite Inbox/Outbox/Audit ledger, local idempotency, retries,
 dead letters, per-conversation locking, minimal AI/human reply leases, and
-restart recovery. The application still does not connect to real PDD, TGO
-business APIs, a production database, a knowledge service, or a model provider.
+restart recovery. Phase 7 adds an extension-owned, local JSON knowledge
+catalog with strict CSV preview/import, immutable versions, active pointers,
+conflict detection, deterministic eligibility, and no-delete rollback. The
+application still does not connect to real PDD, TGO business APIs, TGO RAG, a
+production database, or a model provider.
 
 Runtime endpoints are:
 
@@ -32,6 +35,11 @@ Use the repository-level
 for SQLite state, retries, replay-window handling, human ownership, recovery,
 503 behavior, and safe inspection.
 
+Use the repository-level
+[`knowledge management runbook`](../../../../docs/runbooks/knowledge-management.md)
+for the fixed CSV contract, preview/import binding, eligibility, conflicts,
+rollback, and the strict FAKE/TEST data boundary.
+
 ## 2. Prerequisites
 
 - Python 3.11
@@ -46,9 +54,10 @@ cd extensions/pdd-customer-service
 poetry install --with dev
 ```
 
-Do not install or configure a PDD SDK, model SDK, production database, queue, or
-browser automation tool. Phase 6 uses only Python's standard-library SQLite and
-adds no dependency or Docker service.
+Do not install or configure a PDD SDK, model SDK, RAG client, production
+database, queue, or browser automation tool. Phases 6 and 7 use only Python
+standard-library SQLite/JSON/CSV support and add no dependency or Docker
+service.
 
 If the host does not provide the required Python version or development tools,
 use an isolated Python 3.11 development container. Do not replace the project's
@@ -76,6 +85,8 @@ Rules:
 - `PDD_RELIABILITY_DB_PATH` may point only to a local development SQLite file;
   never commit the file or put credentials, URLs, or production paths in the
   value.
+- `PDD_KNOWLEDGE_CATALOG_PATH` may point only to an ignored local JSON file;
+  the catalog may contain only clearly synthetic FAKE/TEST knowledge.
 
 Verify the ignore rule without creating a file:
 
@@ -123,7 +134,7 @@ Command responsibilities:
 
 | Command | Purpose |
 |---|---|
-| `make format` | Apply Ruff formatting to application and test code |
+| `make format` | Apply Ruff formatting to application, CLI, and test code |
 | `make lint` | Check formatting, Ruff rules, and strict mypy types |
 | `make test` | Run every collected test |
 | `make test-unit` | Run isolated unit tests |
@@ -146,8 +157,9 @@ Every behavior change follows this sequence:
 
 Tests must use synthetic data. Unit and integration tests may not open external
 network connections. Reliability tests use temporary SQLite files and
-deterministic clocks. Future real adapters require approved contract tests
-before any production implementation.
+deterministic clocks; knowledge tests use temporary JSON files and FAKE/TEST
+records. Future real adapters require approved contract tests before any
+production implementation.
 
 ## 7. Directory Ownership
 
@@ -163,6 +175,7 @@ before any production implementation.
 | `tests/integration/` | In-process component tests using fakes |
 | `tests/contract/` | Approved external contract tests |
 | `tests/fixtures/` | Synthetic, non-sensitive test data |
+| `scripts/` | Safe local CLI entry points covered by lint and security checks |
 | `config/pdd/` | Reviewed non-secret configuration |
 | `knowledge/` | Reviewed knowledge manifests |
 | `evals/` | Reproducible quality and safety evaluations |

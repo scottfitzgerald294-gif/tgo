@@ -162,6 +162,7 @@ alembic/versions/*.py
 # Temporary files
 tmp/
 .tmp/
+.local/
 temp/
 uploads/
 

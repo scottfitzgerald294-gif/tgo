@@ -4,6 +4,14 @@ from app.repositories.conversations import (
     ConversationRepository,
     InMemoryConversationRepository,
 )
+from app.repositories.knowledge import (
+    DuplicateKnowledgeVersionError,
+    JsonKnowledgeRepository,
+    KnowledgePersistenceError,
+    KnowledgeRepository,
+    KnowledgeVersionAlreadyActiveError,
+    KnowledgeVersionNotFoundError,
+)
 from app.repositories.reliability import (
     PersistenceUnavailableError,
     ReliabilityStore,
@@ -12,7 +20,13 @@ from app.repositories.reliability import (
 
 __all__ = [
     "ConversationRepository",
+    "DuplicateKnowledgeVersionError",
     "InMemoryConversationRepository",
+    "JsonKnowledgeRepository",
+    "KnowledgePersistenceError",
+    "KnowledgeRepository",
+    "KnowledgeVersionAlreadyActiveError",
+    "KnowledgeVersionNotFoundError",
     "PersistenceUnavailableError",
     "ReliabilityStore",
     "SQLiteReliabilityStore",
