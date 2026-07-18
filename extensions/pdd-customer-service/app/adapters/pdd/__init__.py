@@ -1,4 +1,12 @@
-"""Reserved PDD adapter boundary.
+"""PDD adapter boundaries."""
 
-No real PDD protocol is implemented in Phase 3.
-"""
+from app.adapters.pdd.base import PddAdapter
+from app.adapters.pdd.mock import MockPddAdapter
+from app.adapters.pdd.real import RealPddAdapter, RealPddNotConfiguredError
+
+__all__ = [
+    "MockPddAdapter",
+    "PddAdapter",
+    "RealPddAdapter",
+    "RealPddNotConfiguredError",
+]

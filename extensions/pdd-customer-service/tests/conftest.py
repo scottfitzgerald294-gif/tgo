@@ -6,13 +6,33 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from app.adapters.pdd import MockPddAdapter
 from app.main import create_app
+from app.repositories import InMemoryConversationRepository
 
 
 @pytest.fixture
-def application() -> FastAPI:
+def mock_pdd_adapter() -> MockPddAdapter:
+    """Return fresh synthetic PDD state for each test."""
+    return MockPddAdapter()
+
+
+@pytest.fixture
+def conversation_repository() -> InMemoryConversationRepository:
+    """Return a fresh local conversation repository for each test."""
+    return InMemoryConversationRepository()
+
+
+@pytest.fixture
+def application(
+    mock_pdd_adapter: MockPddAdapter,
+    conversation_repository: InMemoryConversationRepository,
+) -> FastAPI:
     """Return a fresh application for each test."""
-    return create_app()
+    return create_app(
+        pdd_adapter=mock_pdd_adapter,
+        conversation_repository=conversation_repository,
+    )
 
 
 @pytest.fixture

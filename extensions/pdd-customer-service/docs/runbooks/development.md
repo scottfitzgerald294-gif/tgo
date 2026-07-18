@@ -2,20 +2,30 @@
 
 ## 1. Current Scope
 
-Phase 3 provides an independent Python project skeleton and a process health
-endpoint only. The application does not connect to PDD, TGO, a database, a
-message system, a knowledge service, or a model provider.
+Phase 3 established the independent Python project and dependency-free process
+health endpoint. Phase 5 adds only an in-process PDD message simulator with
+synthetic data, an in-memory conversation repository, a fixed reply, and a
+buyer-visible transcript endpoint. The application still does not connect to
+real PDD, TGO business APIs, a database, a message system, a knowledge service,
+or a model provider.
 
-The only runtime endpoint is:
+Runtime endpoints are:
 
 ```text
 GET /health
 200 {"status":"healthy","service":"pdd-customer-service"}
+
+POST /simulator/messages
+GET /simulator/shops/{shop_id}/buyers/{buyer_id}/conversations/{conversation_id}
 ```
 
 The health endpoint is a process-level readiness signal. It intentionally makes
 no external calls so infrastructure failures cannot make the process itself
 unobservable.
+
+Use the repository-level
+[`PDD simulator runbook`](../../../../docs/runbooks/pdd-simulator.md) for
+synthetic POST/GET examples, expected results, limitations, and troubleshooting.
 
 ## 2. Prerequisites
 
@@ -32,7 +42,7 @@ poetry install --with dev
 ```
 
 Do not install or configure a PDD SDK, model SDK, database, queue, or browser
-automation tool during Phase 3.
+automation tool for the Phase 5 simulator.
 
 If the host does not provide the required Python version or development tools,
 use an isolated Python 3.11 development container. Do not replace the project's
@@ -55,8 +65,8 @@ Rules:
 - Use secret references rather than secret values in shareable configuration.
 - Never paste real PDD, TGO, model, database, buyer, or production credentials
   into the repository, tests, fixtures, logs, screenshots, or issue reports.
-- `PDD_INTEGRATION_ENABLED` and `TGO_INTEGRATION_ENABLED` must remain unset in
-  Phase 3.
+- `PDD_INTEGRATION_ENABLED` and `TGO_INTEGRATION_ENABLED` must remain unset for
+  the local simulator.
 
 Verify the ignore rule without creating a file:
 
@@ -84,7 +94,8 @@ Expected response:
 {"status":"healthy","service":"pdd-customer-service"}
 ```
 
-Starting the health service must not produce outbound network traffic.
+Starting the health and simulator service must not produce outbound network
+traffic.
 
 ## 5. Development Commands
 
@@ -124,7 +135,7 @@ Every behavior change follows this sequence:
 5. Run the focused test, its full test category, and `make test`.
 6. Run formatting, lint, and security checks before committing.
 
-Tests must use synthetic data. Unit and Phase 3 integration tests may not open
+Tests must use synthetic data. Unit and Phase 5 integration tests may not open
 external network connections. Future real adapters require approved contract
 tests before any production implementation.
 
