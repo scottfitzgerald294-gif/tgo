@@ -2,7 +2,7 @@
 
 ## 状态
 
-`PASS`，浏览器首次初始化为`MANUAL_PENDING`。
+`PASS`，浏览器首次初始化与登录人工验收已完成。
 
 未经拼多多定制的TGO已在当前Windows Docker Desktop环境中完成构建、迁移、
 启动、HTTP验证和非破坏性重启验证。自动化基线满足进入阶段5的门禁。
@@ -101,20 +101,24 @@ Redis在两次检查中均返回`PONG`。重启前后Postgres公共表数量均�
 回显风险。阶段4禁止修改TGO核心，故将其记录为后续最小化核心修复候选，不在
 本阶段绕过。
 
-## 人工待验证
+## 人工验收结果
 
-`MANUAL_PENDING`
+`PASS`
 
-自动状态接口确认：
+用户已在 `http://localhost:5173/setup` 完成以下人工验收：
 
-- `is_installed=false`
-- `has_admin=false`
-- `has_user_staff=false`
-- `has_llm_config=false`
+- 完成TGO首次初始化；
+- 创建本地管理员 `admin` 并成功登录；
+- 创建本地测试客服 `agent01`（显示名：测试客服01）并成功登录；
+- 在模型配置步骤选择“跳过”，未填写模型密钥；
+- 确认本地工作台可以正常访问；
+- 确认测试客服权限隔离正常；
+- 确认暂停接待、状态持久化和恢复接待正常；
+- 确认15个TGO核心容器均为 `healthy`。
 
-用户需在`http://localhost:5173/setup`完成管理员和至少一个本地测试客服创建，
-在模型步骤选择“跳过”，然后登录。详细点击步骤见
-`docs/runbooks/tgo-local-baseline.md`。
+初始化前自动状态接口记录的
+`is_installed=false`、`has_admin=false`、`has_user_staff=false` 和
+`has_llm_config=false` 属于人工初始化前的历史状态。
 
 ## 核心代码、依赖和数据
 
