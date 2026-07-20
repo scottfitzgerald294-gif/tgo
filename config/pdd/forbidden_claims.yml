@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "claim_id": "fake-unconditional-refund",
+      "risk_level": "high",
+      "phrases": [
+        "保证退款",
+        "无条件退款",
+        "保证赔偿"
+      ]
+    },
+    {
+      "claim_id": "fake-absolute-certainty",
+      "risk_level": "critical",
+      "phrases": [
+        "百分百",
+        "绝对安全",
+        "零风险"
+      ]
+    },
+    {
+      "claim_id": "fake-permanent-promise",
+      "risk_level": "high",
+      "phrases": [
+        "永久有效",
+        "一定到账"
+      ]
+    }
+  ]
+}

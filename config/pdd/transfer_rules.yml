@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "handoff_message": "您的问题需要人工客服进一步处理，已为您转接，请稍候。",
+  "text_rules": [
+    {
+      "priority": 2,
+      "reason_code": "human_requested",
+      "risk_level": "medium",
+      "keywords": [
+        "真人客服",
+        "人工客服",
+        "转人工",
+        "客服人员",
+        "人工处理",
+        "真人服务"
+      ]
+    },
+    {
+      "priority": 3,
+      "reason_code": "complaint_legal_regulatory",
+      "risk_level": "high",
+      "keywords": [
+        "投诉",
+        "举报",
+        "律师",
+        "起诉",
+        "法律",
+        "监管",
+        "市监局",
+        "消协",
+        "12315"
+      ]
+    },
+    {
+      "priority": 4,
+      "reason_code": "refund_compensation_price",
+      "risk_level": "high",
+      "keywords": [
+        "退款",
+        "退钱",
+        "赔偿",
+        "赔付",
+        "补偿",
+        "改价",
+        "降价",
+        "差价",
+        "价格保护"
+      ]
+    },
+    {
+      "priority": 5,
+      "reason_code": "order_change",
+      "risk_level": "high",
+      "keywords": [
+        "改地址",
+        "修改地址",
+        "换地址",
+        "取消订单",
+        "修改订单",
+        "改订单",
+        "更改订单",
+        "拦截订单"
+      ]
+    },
+    {
+      "priority": 6,
+      "reason_code": "product_safety_injury",
+      "risk_level": "critical",
+      "keywords": [
+        "受伤",
+        "伤害",
+        "有毒",
+        "漏电",
+        "起火",
+        "爆炸",
+        "误食"
+      ]
+    },
+    {
+      "priority": 7,
+      "reason_code": "severe_quality",
+      "risk_level": "high",
+      "keywords": [
+        "严重质量",
+        "断裂",
+        "破损",
+        "发霉",
+        "刺鼻",
+        "无法使用",
+        "大面积脱落"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+knowledge_id,version,kind,title,content,status,approval_status,applicable_shop,applicable_product,applicable_sku,source,effective_at,expires_at,risk_level,allowed_for_auto_reply,reviewed_by
+fake-product-001,1,product,FAKE商品说明,FAKE测试商品为虚构文具。,published,approved,fake-shop,fake-product-001,*,FAKE://knowledge/product-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,low,true,fake-reviewer
+fake-product-001,2,product,FAKE商品说明v2,FAKE测试商品第二版仅用于回滚演练。,published,approved,fake-shop,fake-product-001,*,FAKE://knowledge/product-001-v2,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,low,false,fake-reviewer
+fake-sku-001,1,sku,FAKE规格说明,FAKE测试规格为蓝色虚构款。,published,approved,fake-shop,fake-product-001,fake-sku-blue,FAKE://knowledge/sku-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,low,true,fake-reviewer
+fake-faq-001,1,faq,FAKE常见问题,FAKE测试商品仅用于本地演示。,published,approved,fake-shop,fake-product-001,*,FAKE://knowledge/faq-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,low,true,fake-reviewer
+fake-shipping-001,1,shipping,FAKE物流说明,FAKE订单将在测试时间内模拟发出。,published,approved,fake-shop,*,*,FAKE://knowledge/shipping-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,medium,true,fake-reviewer
+fake-after-sales-001,1,after_sales,FAKE售后说明,FAKE售后问题需要按测试流程核验。,published,approved,fake-shop,*,*,FAKE://knowledge/after-sales-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,medium,true,fake-reviewer
+fake-forbidden-001,1,forbidden_answer,FAKE禁止承诺,FAKE场景不得承诺无条件赔偿。,published,approved,fake-shop,*,*,FAKE://knowledge/forbidden-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,high,false,fake-reviewer
+fake-handoff-001,1,handoff_condition,FAKE转人工条件,FAKE场景要求退款时转人工。,published,approved,fake-shop,*,*,FAKE://knowledge/handoff-001,2026-01-01T00:00:00Z,2099-01-01T00:00:00Z,medium,false,fake-reviewer

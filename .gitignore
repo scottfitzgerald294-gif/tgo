@@ -148,6 +148,8 @@ Thumbs.db
 
 # Project specific
 logs/
+!docs/weekend-run/logs/
+!docs/weekend-run/logs/*.md
 backups/
 *.db
 *.sqlite3
@@ -160,6 +162,7 @@ alembic/versions/*.py
 # Temporary files
 tmp/
 .tmp/
+.local/
 temp/
 uploads/
 
@@ -169,3 +172,55 @@ envs/
 /data/
 repos/tgo-plugin-sdk/
 .worktrees/
+
+# Security: local environment overrides (keep shareable templates)
+.env.*
+!.env.example
+!.env.*.example
+
+# Security: private keys, certificates, and credential stores
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.kdbx
+*.csr
+*.der
+*.crt
+*.cer
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+credentials*.json
+service-account*.json
+.secrets/
+secrets/
+credentials/
+
+# Rotated logs and local dependency caches
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.ruff_cache/
+
+# Local database sidecar files
+*.sqlite
+*.db3
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3-journal
+*.sqlite3-shm
+*.sqlite3-wal
