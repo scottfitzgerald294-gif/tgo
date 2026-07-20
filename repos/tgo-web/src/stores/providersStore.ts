@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import AIProvidersApiService, { type AIProviderResponseDTO } from '@/services/aiProvidersApi';
+import { mergeProviderModels, type ProviderModelWithType } from './providerModelTypes';
 
 export type ProviderKind = 'openai' | 'azure' | 'qwen' | 'moonshot' | 'deepseek' | 'baichuan' | 'ollama' | 'custom';
 
@@ -122,7 +123,7 @@ export const useProvidersStore = create<ProvidersState>()(
         if (!current) return;
         const nextKind = patch.kind || current.kind;
         // normalize models/defaultModel
-        let models = Array.isArray(patch.models) ? patch.models.filter(Boolean) : current.models || [];
+        const models = Array.isArray(patch.models) ? patch.models.filter(Boolean) : current.models || [];
         let defaultModel = patch.defaultModel ?? current.defaultModel;
         if (defaultModel && !models.includes(defaultModel)) models.push(defaultModel);
         if (!defaultModel && models.length > 0) defaultModel = models[0];
@@ -154,21 +155,33 @@ export const useProvidersStore = create<ProvidersState>()(
       addModelToProvider: async (providerId, models) => {
         const current = get().providers.find(p => p.id === providerId);
         if (!current) return;
-        
-        // Fetch current model IDs
+
         const existingModelIds = current.models || [];
-        
-        // Merge with type info for new models, and assume 'chat' for existing ones if type unknown
-        // Backend update_ai_provider will handle this
-        const available_models: any[] = [
-          ...existingModelIds.map(id => ({ model_id: id, model_type: 'chat' as const })),
-          ...models.filter(m => !existingModelIds.includes(m.model_id))
-        ];
-        
-        const updated = await svc.updateProvider(providerId, {
-          available_models
+        const projectModels = await svc.listProjectModels({
+          limit: 100,
+          offset: 0
         });
-        
+
+        const modelTypesById = new Map(
+          projectModels.data
+            .filter(model => model.provider_id === providerId)
+            .map(model => [
+              model.model_id,
+              model.model_type === 'embedding' ? 'embedding' as const : 'chat' as const
+            ])
+        );
+
+        const existingModels: ProviderModelWithType[] = existingModelIds.map(modelId => ({
+          model_id: modelId,
+          model_type: modelTypesById.get(modelId) ?? 'chat'
+        }));
+
+        const availableModels = mergeProviderModels(existingModels, models);
+
+        const updated = await svc.updateProvider(providerId, {
+          available_models: availableModels
+        });
+
         const mapped = mapDtoToConfig(updated);
         set((state) => ({
           providers: state.providers.map(p => p.id === providerId ? mapped : p)
